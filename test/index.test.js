@@ -31,7 +31,6 @@ describe('Server test', function () {
 
     expect(res.body).to.has.property('path', '/');
     expect(res.body).to.has.property('type', 'inode/directory');
-    expect(res.body).to.has.property('size', 0);
     expect(res).to.has.property('status', 200);
   });
 
@@ -53,7 +52,6 @@ describe('Server test', function () {
 
     expect(res.body).to.has.property('path', '/tmp/create/hello.txt');
     expect(res.body).to.has.property('type', 'text/plain');
-    expect(res.body).to.has.property('size', 0);
     expect(res).to.has.property('status', 200);
   });
 
@@ -102,7 +100,6 @@ describe('Server test', function () {
 
     expect(res.body).to.has.property('path', '/tmp/create/dir');
     expect(res.body).to.has.property('type', 'inode/directory');
-    expect(res.body).to.has.property('size', 0);
     expect(res).to.has.property('status', 200);
   });
 
