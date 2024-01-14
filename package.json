@@ -1,0 +1,30 @@
+{
+  "name": "@wal-li/fsapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "mocha --exit",
+    "coverage": "c8 npm run test",
+    "beta": "npm publish --access public --tag beta"
+  },
+  "keywords": [
+    "server",
+    "file-system",
+    "rest",
+    "api"
+  ],
+  "author": "HaoVA <hi@haova.me> (https://www.haova.me)",
+  "license": "MIT",
+  "devDependencies": {
+    "c8": "^8.0.1",
+    "chai": "^4.3.10",
+    "chai-http": "^4.4.0",
+    "mocha": "^10.2.0"
+  },
+  "dependencies": {
+    "@wal-li/server": "^2.0.2",
+    "mime": "^4.0.1"
+  }
+}
