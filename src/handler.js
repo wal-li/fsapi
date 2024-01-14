@@ -18,3 +18,9 @@ export function getItemInfo(root, path) {
     updatedAt: new Date(stats.ctime)
   };
 }
+
+export function getField(fields, name) {
+  return Array.isArray(fields[name]) && fields[name].length > 0
+    ? fields[name][fields[name].length - 1]
+    : fields[name];
+}

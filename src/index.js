@@ -1,7 +1,17 @@
-import { readdirSync } from 'node:fs';
-import { join } from 'node:path';
+import {
+  closeSync,
+  cpSync,
+  existsSync,
+  mkdirSync,
+  openSync,
+  readdirSync,
+  renameSync,
+  rmSync,
+  writeFileSync
+} from 'node:fs';
+import { dirname, join } from 'node:path';
 import { OutputFile, Router } from '@wal-li/server';
-import { getItemInfo } from './handler.js';
+import { getField, getItemInfo } from './handler.js';
 import { DIRECTORY_MIME } from './constants.js';
 
 export function createFsApi(config = {}) {
@@ -43,6 +53,86 @@ export function createFsApi(config = {}) {
     return {
       status: 200,
       body: item
+    };
+  });
+
+  router.post('/:path(.*)', ({ params: { path }, fields, files }) => {
+    const absPath = join(root, join('/', path));
+
+    if (existsSync(absPath))
+      return {
+        status: 400,
+        body: 'Item Exists'
+      };
+
+    if (getField(fields, 'type') === DIRECTORY_MIME) {
+      mkdirSync(absPath, { recursive: true });
+    } else {
+      const absParentDir = dirname(absPath);
+      mkdirSync(absParentDir, { recursive: true });
+
+      const content = getField(fields, 'content') || getField(files, 'content');
+
+      if (content && content.constructor.name === 'PersistentFile') {
+        cpSync(content.filepath, absPath);
+      } else if (content) {
+        writeFileSync(absPath, content);
+      } else {
+        closeSync(openSync(absPath, 'w'));
+      }
+    }
+
+    const item = getItemInfo(root, path);
+
+    return {
+      status: 200,
+      body: item
+    };
+  });
+
+  router.delete('/:path(.*)', ({ params: { path } }) => {
+    const absPath = join(root, join('/', path));
+    const item = getItemInfo(root, path);
+
+    // not found
+    if (!item) return null;
+
+    // remove
+    rmSync(absPath, { recursive: true });
+
+    return {
+      status: 200,
+      body: item
+    };
+  });
+
+  router.patch('/:path(.*)', ({ params: { path }, fields, files }) => {
+    let absPath = join(root, join('/', path));
+
+    // not found
+    if (!existsSync(absPath)) return null;
+
+    const nextPath = getField(fields, 'path');
+    if (nextPath) {
+      const nextAbsPath = join(root, join('/', nextPath));
+      if (!existsSync(dirname(nextAbsPath))) mkdirSync(dirname(nextAbsPath));
+      renameSync(absPath, nextAbsPath);
+      path = nextPath;
+    }
+
+    const content = getField(fields, 'content') || getField(files, 'content');
+    absPath = join(root, join('/', path));
+
+    if (content && content.constructor.name === 'PersistentFile') {
+      rmSync(absPath, { recursive: true });
+      cpSync(content.filepath, absPath);
+    } else if (content) {
+      writeFileSync(absPath, content);
+    }
+
+    return {
+      status: 200,
+      body: getItemInfo(root, path)
     };
   });
 

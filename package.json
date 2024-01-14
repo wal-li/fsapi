@@ -24,7 +24,7 @@
     "mocha": "^10.2.0"
   },
   "dependencies": {
-    "@wal-li/server": "^2.0.2",
+    "@wal-li/server": "^2.0.3",
     "mime": "^4.0.1"
   }
 }
