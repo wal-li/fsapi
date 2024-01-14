@@ -134,6 +134,8 @@ describe('Server test', function () {
   it('should get dir list', async () => {
     const res = await makeRequest().get('/api/?children');
 
+    console.log(JSON.stringify(res.body, 0, 2));
+
     expect(res.body).to.has.property('length', 3);
     expect(res).to.has.property('status', 200);
   });
